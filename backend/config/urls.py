@@ -12,4 +12,6 @@ urlpatterns = [
 
     # Emergency contacts: /api/contacts/...
     path('api/contacts/', include('contacts.urls')),
+
+    path('api/sos/', include('sos.urls')),
 ]
