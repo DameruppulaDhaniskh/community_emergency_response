@@ -1,0 +1,32 @@
+{
+  "id": "safecircle-m3-local-env",
+  "name": "SafeCircle M3 Local Environment",
+  "values": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000", "enabled": true },
+    { "key": "resident_email", "value": "asha@example.com", "enabled": true },
+    { "key": "other_resident_email", "value": "kiran@example.com", "enabled": true },
+    { "key": "admin_email", "value": "admin@example.com", "enabled": true },
+    { "key": "security_email", "value": "security@example.com", "enabled": true },
+    { "key": "volunteer_email", "value": "volunteer@example.com", "enabled": true },
+    { "key": "volunteer2_email", "value": "volunteer2@example.com", "enabled": true },
+    { "key": "guardian_email", "value": "ravi@example.com", "enabled": true },
+    { "key": "demo_password", "value": "password123", "enabled": true },
+    { "key": "resident_token", "value": "", "enabled": true },
+    { "key": "other_resident_token", "value": "", "enabled": true },
+    { "key": "admin_token", "value": "", "enabled": true },
+    { "key": "security_token", "value": "", "enabled": true },
+    { "key": "volunteer_token", "value": "", "enabled": true },
+    { "key": "volunteer2_token", "value": "", "enabled": true },
+    { "key": "guardian_token", "value": "", "enabled": true },
+    { "key": "volunteer_id", "value": "", "enabled": true },
+    { "key": "volunteer2_id", "value": "", "enabled": true },
+    { "key": "incident_id", "value": "", "enabled": true },
+    { "key": "sos_id", "value": "", "enabled": true },
+    { "key": "res_notif_id", "value": "", "enabled": true },
+    { "key": "unread_before", "value": "", "enabled": true },
+    { "key": "guardian_username", "value": "", "enabled": true },
+    { "key": "guardian_phone", "value": "", "enabled": true },
+    { "key": "pm_contact_id", "value": "", "enabled": true }
+  ]
+}
+

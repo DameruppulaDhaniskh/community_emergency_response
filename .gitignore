@@ -1,7 +1,38 @@
+# Python / Virtualenv
 venv/
 venv_local/
+env/
 __pycache__/
 *.py[cod]
+*$py.class
+*.sqlite3
 db.sqlite3
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment variables & secrets
 .env
+.env.*
+*.env
+*.pem
+*.key
+
+# Editor & OS
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test captures and logs
+*.log
+test-*.png
+test_results.txt
+
+# Media & Static assets
+media/
+staticfiles/
+*.zip

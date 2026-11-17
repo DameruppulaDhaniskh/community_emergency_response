@@ -42,19 +42,20 @@ class NotificationRoutingTests(APITestCase):
         self.g_no = make_user('guard_no', 'guardian')
         EmergencyContact.objects.create(
             resident=self.res1, linked_user=self.g_ok, contact_type='primary_guardian',
-            name='Guard Ok', phone='8888888888', email='guard_ok@test.com', is_verified=True,
+            name='Guard Ok', phone='8888888888', email='guard_ok@test.com', status='accepted', is_verified=True,
         )
         EmergencyContact.objects.create(
             resident=self.res1, linked_user=self.g_no, contact_type='secondary_guardian',
-            name='Guard No', phone='7777777777', is_verified=False,
+            name='Guard No', phone='7777777777', status='pending', is_verified=False,
         )
 
     def raise_sos(self):
         self.client.force_authenticate(self.res1)
-        r = self.client.post('/api/incidents/sos/', {
-            'emergency_type': 'medical', 'description': 'Chest pain',
-            'latitude': '16.506200', 'longitude': '80.648000',
-        })
+        with self.captureOnCommitCallbacks(execute=True):
+            r = self.client.post('/api/incidents/sos/', {
+                'emergency_type': 'medical', 'description': 'Chest pain',
+                'latitude': '16.506200', 'longitude': '80.648000',
+            })
         self.assertEqual(r.status_code, 201)
         return r.data['id']
 
@@ -169,19 +170,21 @@ class NotificationAPITests(APITestCase):
         self.guardian = make_user('guard_a', 'guardian')
         EmergencyContact.objects.create(
             resident=self.res1, linked_user=self.guardian, contact_type='primary_guardian',
-            name='Guard A', phone='8888888888', email='guard_a@test.com', is_verified=True,
+            name='Guard A', phone='8888888888', email='guard_a@test.com', status='accepted', is_verified=True,
         )
 
     def raise_sos(self, provider_ok=True):
         self.client.force_authenticate(self.res1)
         if provider_ok:
-            r = self.client.post('/api/incidents/sos/', {'emergency_type': 'fall'})
+            with self.captureOnCommitCallbacks(execute=True):
+                r = self.client.post('/api/incidents/sos/', {'emergency_type': 'fall'})
         else:
             with mock.patch(
                 'notifications.services.send_via_provider',
                 return_value={'success': False, 'error': 'Provider down', 'simulated': True},
             ):
-                r = self.client.post('/api/incidents/sos/', {'emergency_type': 'fall'})
+                with self.captureOnCommitCallbacks(execute=True):
+                    r = self.client.post('/api/incidents/sos/', {'emergency_type': 'fall'})
         self.assertEqual(r.status_code, 201)
         return r.data['id']
 
@@ -329,7 +332,7 @@ class IncidentStorageTests(APITestCase):
         self.assertEqual(incident.latitude, Decimal('16.506200'))
         self.assertEqual(incident.longitude, Decimal('80.648000'))
         self.assertEqual(incident.location_accuracy, 12.5)
-        self.assertEqual(incident.status, 'OPEN')
+        self.assertEqual(incident.status, 'REPORTED')
         self.assertIsNotNone(incident.location_captured_at)
         self.assertIsNone(incident.resolved_at)
 
@@ -337,7 +340,8 @@ class IncidentStorageTests(APITestCase):
         resident = make_user('res_c', 'resident')
         self.client.force_authenticate(resident)
         with mock.patch('incidents.views.notify_incident', side_effect=Exception('boom')):
-            r = self.client.post('/api/incidents/sos/', {'emergency_type': 'fire'})
+            with self.captureOnCommitCallbacks(execute=True):
+                r = self.client.post('/api/incidents/sos/', {'emergency_type': 'fire'})
         self.assertEqual(r.status_code, 201)
         self.assertTrue(Incident.objects.filter(pk=r.data['id']).exists())
 

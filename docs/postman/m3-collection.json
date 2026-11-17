@@ -1,0 +1,1230 @@
+{
+  "info": {
+    "name": "SafeCircle M3 — Community Emergency Response API",
+    "_postman_id": "a7f3e2c1-8d9b-4f12-9a3e-1b2c3d4e5f6a",
+    "description": "Milestone 3 comprehensive test suite: Auth, Incidents & Evidence, Assignment & Workflow, Notifications, Access Control & Failures.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "01. Health Check",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('DB connected', () => pm.expect(j.database).to.eql('connected'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health/"
+          }
+        },
+        {
+          "name": "02. Login Resident (Asha)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.expect(j.access).to.be.a('string');",
+                "pm.environment.set('resident_token', j.access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{resident_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "03. Login Neighbour Resident (Kiran)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('other_resident_token', pm.response.json().access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{other_resident_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "04. Login Admin (Vikram)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('admin_token', pm.response.json().access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{admin_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "05. Login Security (Suresh)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('security_token', pm.response.json().access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{security_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "06. Login Volunteer 1 (Priya)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('volunteer_token', pm.response.json().access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{volunteer_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "07. Get Volunteer 1 Profile ID",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Role volunteer', () => pm.expect(j.role).to.eql('volunteer'));",
+                "pm.environment.set('volunteer_id', j.id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{volunteer_token}}" }],
+            "url": "{{base_url}}/api/auth/profile/"
+          }
+        },
+        {
+          "name": "08. Login Volunteer 2 (Arjun)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('volunteer2_token', pm.response.json().access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{volunteer2_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "09. Get Volunteer 2 Profile ID",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('volunteer2_id', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{volunteer2_token}}" }],
+            "url": "{{base_url}}/api/auth/profile/"
+          }
+        },
+        {
+          "name": "10. Login Guardian (Ravi)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.environment.set('guardian_token', pm.response.json().access);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\": \"{{guardian_email}}\", \"password\": \"{{demo_password}}\"}" },
+            "url": "{{base_url}}/api/auth/login/"
+          }
+        },
+        {
+          "name": "11. Get Guardian Profile (Username & Phone)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.environment.set('guardian_username', j.username);",
+                "pm.environment.set('guardian_phone', j.phone);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{guardian_token}}" }],
+            "url": "{{base_url}}/api/auth/profile/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incidents success",
+      "item": [
+        {
+          "name": "01. Report Detailed Incident (Form + Evidence Image)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Created 201', () => pm.response.to.have.status(201));",
+                "const j = pm.response.json();",
+                "pm.test('Status REPORTED', () => pm.expect(j.status).to.eql('REPORTED'));",
+                "pm.test('Has location & evidence', () => { pm.expect(j.location_available).to.be.true; pm.expect(j.evidence_count).to.eql(1); });",
+                "pm.environment.set('incident_id', j.id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Newman Fire Smoke Test", "type": "text" },
+                { "key": "category", "value": "fire", "type": "text" },
+                { "key": "description", "value": "Smoke reported near meter room", "type": "text" },
+                { "key": "latitude", "value": "12.971600", "type": "text" },
+                { "key": "longitude", "value": "77.594600", "type": "text" },
+                { "key": "images", "type": "file", "src": "docs/postman/sample_evidence.png" }
+              ]
+            },
+            "url": "{{base_url}}/api/incidents/"
+          }
+        },
+        {
+          "name": "02. Trigger One-Tap SOS",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Created 201', () => pm.response.to.have.status(201));",
+                "const j = pm.response.json();",
+                "pm.test('Status REPORTED', () => pm.expect(j.status).to.eql('REPORTED'));",
+                "pm.environment.set('sos_id', j.id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"emergency_type\": \"medical\", \"description\": \"Chest tightness\"}" },
+            "url": "{{base_url}}/api/incidents/sos/"
+          }
+        },
+        {
+          "name": "03. List Filtered & Paginated Incidents (Admin)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Paginated shape', () => { pm.expect(j).to.have.property('count'); pm.expect(j.results).to.be.an('array'); });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/incidents/?status=REPORTED&category=fire&search=Newman&page=1&page_size=10"
+          }
+        },
+        {
+          "name": "04. Get Incident Detail (Reporter)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Has reporter, evidence, history_summary', () => {",
+                "  pm.expect(j.reporter).to.have.property('name');",
+                "  pm.expect(j.evidence_urls.length).to.be.at.least(1);",
+                "  pm.expect(j.history_summary.total_events).to.be.at.least(1);",
+                "});"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/"
+          }
+        },
+        {
+          "name": "05. Upload Additional Evidence Photo",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Created 201', () => pm.response.to.have.status(201));",
+                "pm.test('Has image_url', () => pm.expect(pm.response.json()).to.have.property('image_url'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "image", "type": "file", "src": "docs/postman/sample_evidence.png" }]
+            },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/evidence/"
+          }
+        },
+        {
+          "name": "06. Get Incident Evidence & History",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const list = pm.response.json();",
+                "pm.test('History has created and evidence_added', () => {",
+                "  const types = list.map(h => h.event_type);",
+                "  pm.expect(types).to.include('created');",
+                "  pm.expect(types).to.include('evidence_added');",
+                "});"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/history/"
+          }
+        },
+        {
+          "name": "07. List Resident Own Incidents",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Array returned', () => pm.expect(pm.response.json()).to.be.an('array'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/resident/incidents/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignment and status",
+      "item": [
+        {
+          "name": "01. Security Acknowledges Incident",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('ACKNOWLEDGED', () => pm.expect(pm.response.json().status).to.eql('ACKNOWLEDGED'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{security_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"ACKNOWLEDGED\", \"note\": \"Gate guard confirmed smoke report\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/status/"
+          }
+        },
+        {
+          "name": "02. Admin Lists Available Volunteers",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const arr = pm.response.json();",
+                "pm.test('At least 2 volunteers available', () => pm.expect(arr.length).to.be.at.least(2));",
+                "pm.test('Has open_assignments_count', () => pm.expect(arr[0]).to.have.property('open_assignments_count'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/volunteers/available/?incident_id={{incident_id}}"
+          }
+        },
+        {
+          "name": "03. Admin Assigns Volunteer 1",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Status ASSIGNED', () => pm.expect(j.status).to.eql('ASSIGNED'));",
+                "pm.test('Assigned to Vol 1', () => pm.expect(j.assigned_to.id).to.eql(Number(pm.environment.get('volunteer_id'))));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"volunteer_id\": {{volunteer_id}}, \"note\": \"Dispatching Priya\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/assign/"
+          }
+        },
+        {
+          "name": "04. Admin Reassigns to Volunteer 2 Before Work Starts",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Assigned to Vol 2', () => pm.expect(j.assigned_to.id).to.eql(Number(pm.environment.get('volunteer2_id'))));",
+                "pm.test('History has reassigned', () => pm.expect(j.history.some(h => h.event_type === 'reassigned')).to.be.true);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"volunteer_id\": {{volunteer2_id}}, \"note\": \"Reassigned to closer unit\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/assign/"
+          }
+        },
+        {
+          "name": "05. Volunteer 2 Lists My Assignments",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const ids = pm.response.json().map(i => i.id);",
+                "pm.test('Contains incident_id', () => pm.expect(ids).to.include(Number(pm.environment.get('incident_id'))));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{volunteer2_token}}" }],
+            "url": "{{base_url}}/api/volunteer/incidents/"
+          }
+        },
+        {
+          "name": "06. Volunteer 2 Starts Work (IN_PROGRESS)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('IN_PROGRESS', () => pm.expect(pm.response.json().status).to.eql('IN_PROGRESS'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{volunteer2_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"IN_PROGRESS\", \"note\": \"Isolating circuit\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/status/"
+          }
+        },
+        {
+          "name": "07. Volunteer 2 Resolves Incident (RESOLVED)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('RESOLVED', () => pm.expect(pm.response.json().status).to.eql('RESOLVED'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{volunteer2_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"RESOLVED\", \"note\": \"Breaker switched off safely\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/status/"
+          }
+        },
+        {
+          "name": "08. Admin Closes Incident (CLOSED)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('CLOSED', () => pm.expect(pm.response.json().status).to.eql('CLOSED'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"CLOSED\", \"close_reason\": \"Inspection verified\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/status/"
+          }
+        },
+        {
+          "name": "09. Volunteer Availability Toggle Off & Back On",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('is_available true', () => pm.expect(pm.response.json().is_available).to.be.true);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{volunteer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"is_available\": true}" },
+            "url": "{{base_url}}/api/volunteer/availability/"
+          }
+        },
+        {
+          "name": "10. Escalate Active SOS Incident",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('is_escalated true', () => pm.expect(pm.response.json().is_escalated).to.be.true);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"note\": \"Escalated during verification\"}" },
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/escalate/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "01. Admin Filters Alerts (?type=alerts)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const arr = pm.response.json();",
+                "pm.test('All are alert types', () => pm.expect(arr.every(n => ['INCIDENT_REPORTED', 'ESCALATED'].includes(n.event_type))).to.be.true);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/notifications/?type=alerts"
+          }
+        },
+        {
+          "name": "02. Resident Filters Updates (?type=updates)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const arr = pm.response.json();",
+                "pm.test('Has update notifications', () => pm.expect(arr.length).to.be.at.least(1));",
+                "const unread = arr.find(n => n.channel === 'in_app' && !n.is_read) || arr[0];",
+                "pm.environment.set('res_notif_id', unread.id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/notifications/?type=updates"
+          }
+        },
+        {
+          "name": "03. Resident Gets Unread Count",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const c = pm.response.json().unread_count;",
+                "pm.test('Has unread notifications', () => pm.expect(c).to.be.at.least(1));",
+                "pm.environment.set('unread_before', c);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/notifications/unread-count/"
+          }
+        },
+        {
+          "name": "04. Resident Marks One Notification Read",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Marked read', () => pm.expect(j.is_read).to.be.true);",
+                "pm.test('Delivery untouched', () => pm.expect(j.delivery_status).to.not.eql('DELIVERED'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/notifications/{{res_notif_id}}/read/"
+          }
+        },
+        {
+          "name": "05. Resident Marks All Read",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.expect(pm.response.json()).to.have.property('marked_read');"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/notifications/read-all/"
+          }
+        },
+        {
+          "name": "06. Resident Unread Count Now 0",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Unread is 0', () => pm.expect(pm.response.json().unread_count).to.eql(0));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{resident_token}}" }],
+            "url": "{{base_url}}/api/notifications/unread-count/"
+          }
+        },
+        {
+          "name": "07. Security Monitors Incident Delivery Records",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const arr = pm.response.json();",
+                "pm.test('Records exist without PII leak', () => {",
+                "  pm.expect(arr.length).to.be.at.least(1);",
+                "  pm.expect(arr[0]).to.not.have.property('message');",
+                "});"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{security_token}}" }],
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/notifications/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Failure and access control",
+      "item": [
+        {
+          "name": "01. Unauthenticated Denied (401)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 401', () => pm.response.to.have.status(401));"] }
+          }],
+          "request": { "method": "GET", "url": "{{base_url}}/api/incidents/" }
+        },
+        {
+          "name": "02. Create Incident Missing Title Rejected (400)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"category\": \"fire\"}" },
+            "url": "{{base_url}}/api/incidents/"
+          }
+        },
+        {
+          "name": "03. Guardian Cannot Report Incident (403)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{guardian_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"title\": \"Forbidden\", \"category\": \"fire\"}" },
+            "url": "{{base_url}}/api/incidents/"
+          }
+        },
+        {
+          "name": "04. Other Resident Hidden Incident Returns 404",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/"
+          }
+        },
+        {
+          "name": "05. Unassigned Volunteer 1 Hidden Incident Returns 404",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{volunteer_token}}" }],
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/"
+          }
+        },
+        {
+          "name": "06. Resident Cannot Assign Volunteer (403)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"volunteer_id\": {{volunteer_id}}}" },
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/assign/"
+          }
+        },
+        {
+          "name": "07. Resident Cannot Update Status (403)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"RESOLVED\"}" },
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/status/"
+          }
+        },
+        {
+          "name": "08. Guardian Cannot View Delivery Records (403)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{guardian_token}}" }],
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/notifications/"
+          }
+        },
+        {
+          "name": "09. Invalid Status Jump REPORTED -> RESOLVED Rejected (400)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"RESOLVED\"}" },
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/status/"
+          }
+        },
+        {
+          "name": "10. Closed Incident Rejects Edits (400)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"REPORTED\"}" },
+            "url": "{{base_url}}/api/incidents/{{incident_id}}/status/"
+          }
+        },
+        {
+          "name": "11. Early Close Without Reason Rejected (400)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"CLOSED\"}" },
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/status/"
+          }
+        },
+        {
+          "name": "12. Early Close SOS With Reason Succeeds (200)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('CLOSED with reason', () => pm.expect(pm.response.json().status).to.eql('CLOSED'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\": \"CLOSED\", \"close_reason\": \"Newman test completed\"}" },
+            "url": "{{base_url}}/api/incidents/{{sos_id}}/status/"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Guardian & Lookup Flow",
+      "item": [
+        {
+          "name": "01. Lookup Guardian by Case-Insensitive Username (200)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const j = pm.response.json();",
+                "pm.test('Masked phone & no raw phone/email', () => { pm.expect(j.masked_phone).to.include('*'); pm.expect(j.email).to.be.undefined; pm.expect(j.phone).to.be.undefined; });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/users/lookup/?identifier={{guardian_username}}"
+          }
+        },
+        {
+          "name": "02. Lookup Guardian by Normalized Phone (200)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Role guardian', () => pm.expect(pm.response.json().role).to.eql('guardian'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/users/lookup/?identifier={{guardian_phone}}"
+          }
+        },
+        {
+          "name": "03. Lookup Substring Returns 404",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/users/lookup/?identifier=ravi"
+          }
+        },
+        {
+          "name": "04. Register Duplicate Phone Rejected (400)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                "pm.test('Phone field error', () => pm.expect(pm.response.json().phone).to.be.an('array'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"username\": \"newman_dup_phone\", \"email\": \"newman_dup@example.com\", \"first_name\": \"Dup\", \"last_name\": \"Phone\", \"phone\": \"{{guardian_phone}}\", \"role\": \"resident\", \"password\": \"Password123!\", \"confirm_password\": \"Password123!\"}" },
+            "url": "{{base_url}}/api/auth/register/"
+          }
+        },
+        {
+          "name": "05. Add Non-Guardian Role Rejected (400)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{other_resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"identifier\": \"volunteer_demo\", \"contact_type\": \"primary_guardian\", \"relationship\": \"friend\", \"priority\": 1}" },
+            "url": "{{base_url}}/api/contacts/"
+          }
+        },
+        {
+          "name": "06. Kiran Adds Ravi as Primary Guardian by Username (201 pending)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Created 201', () => pm.response.to.have.status(201));",
+                "const j = pm.response.json();",
+                "pm.test('Status pending & unverified', () => { pm.expect(j.status).to.eql('pending'); pm.expect(j.is_verified).to.be.false; });",
+                "pm.environment.set('pm_contact_id', j.id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{other_resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"identifier\": \"{{guardian_username}}\", \"contact_type\": \"primary_guardian\", \"relationship\": \"sibling\", \"priority\": 1}" },
+            "url": "{{base_url}}/api/contacts/"
+          }
+        },
+        {
+          "name": "07. Self-Verify Endpoint Retired (410 Gone)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 410', () => pm.response.to.have.status(410));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{other_resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"token\": \"dummy\"}" },
+            "url": "{{base_url}}/api/contacts/{{pm_contact_id}}/verify/"
+          }
+        },
+        {
+          "name": "08. Non-Guardian Denied Guardian Requests (403)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Status 403', () => pm.response.to.have.status(403));"] }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/guardian/requests/?status=pending"
+          }
+        },
+        {
+          "name": "09. Guardian Sees Pending Request (200)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const ids = pm.response.json().map(r => r.id);",
+                "pm.test('Contains pm_contact_id', () => pm.expect(ids).to.include(Number(pm.environment.get('pm_contact_id'))));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{guardian_token}}" }],
+            "url": "{{base_url}}/api/guardian/requests/?status=pending"
+          }
+        },
+        {
+          "name": "10. Guardian Declines Request (200 declined)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Declined status', () => pm.expect(pm.response.json().status).to.eql('declined'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{guardian_token}}" }],
+            "url": "{{base_url}}/api/guardian/requests/{{pm_contact_id}}/decline/"
+          }
+        },
+        {
+          "name": "11. Kiran Re-Requests After Decline via Resend (201)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Created 201', () => pm.response.to.have.status(201));",
+                "const j = pm.response.json();",
+                "pm.test('Fresh pending request', () => pm.expect(j.status).to.eql('pending'));",
+                "pm.environment.set('pm_contact_id', j.id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/contacts/{{pm_contact_id}}/resend/"
+          }
+        },
+        {
+          "name": "12. Kiran Cancels Pending Request (200 cancelled)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Cancelled status', () => pm.expect(pm.response.json().status).to.eql('cancelled'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/contacts/{{pm_contact_id}}/cancel/"
+          }
+        },
+        {
+          "name": "13. Kiran Adds Ravi Again by Phone After Cancel (201, slot reusable)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Created 201', () => pm.response.to.have.status(201));",
+                "pm.environment.set('pm_contact_id', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{other_resident_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"identifier\": \"{{guardian_phone}}\", \"contact_type\": \"primary_guardian\", \"relationship\": \"sibling\", \"priority\": 1}" },
+            "url": "{{base_url}}/api/contacts/"
+          }
+        },
+        {
+          "name": "14. Guardian Accepts Request (200 accepted)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "pm.test('Accepted status', () => pm.expect(pm.response.json().status).to.eql('accepted'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{guardian_token}}" }],
+            "url": "{{base_url}}/api/guardian/requests/{{pm_contact_id}}/accept/"
+          }
+        },
+        {
+          "name": "15. Guardian Views Accepted Dependents (200)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                "const names = pm.response.json().map(d => d.name);",
+                "pm.test('Kiran listed as accepted dependent', () => pm.expect(names).to.include('Kiran Rao'));"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{guardian_token}}" }],
+            "url": "{{base_url}}/api/guardian/dependents/"
+          }
+        },
+        {
+          "name": "16. Cleanup Kiran Contact (204)",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["pm.test('Deleted 204', () => pm.response.to.have.status(204));"] }
+          }],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{other_resident_token}}" }],
+            "url": "{{base_url}}/api/contacts/{{pm_contact_id}}/"
+          }
+        }
+      ]
+    }
+  ]
+}
+

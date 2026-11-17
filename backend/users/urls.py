@@ -15,7 +15,8 @@ urlpatterns = [
     path('auth/profile/', views.UserProfileView.as_view(), name='auth-profile'),
     path('auth/change-password/', views.ChangePasswordView.as_view(), name='auth-change-password'),
 
-    # ---------- Admin user management ----------
+    # ---------- User lookup & management ----------
+    path('users/lookup/', views.UserLookupView.as_view(), name='user-lookup'),
     path('users/', views.UserListView.as_view(), name='user-list'),
     path('users/<int:pk>/', views.UserDetailView.as_view(), name='user-detail'),
 ]

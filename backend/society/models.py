@@ -20,6 +20,8 @@ class Society(models.Model):
         related_name='administered_societies',
         limit_choices_to={'role': 'admin'},
     )
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -107,6 +109,9 @@ class ResidentFlatMapping(models.Model):
         default='tenant',
     )
     is_primary_resident = models.BooleanField(default=True)
+    home_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    home_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    home_label = models.CharField(max_length=100, blank=True)
     move_in_date = models.DateField(null=True, blank=True)
     move_out_date = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -151,6 +156,8 @@ class SocietyAlertPolicy(models.Model):
         Society, on_delete=models.CASCADE, related_name='alert_policy'
     )
     notify_community = models.BooleanField(default=True)
+    include_neighbour_societies = models.BooleanField(default=False)
+    neighbour_radius_km = models.FloatField(default=3.0)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -158,3 +165,125 @@ class SocietyAlertPolicy(models.Model):
 
     def __str__(self):
         return f"Alert policy: {self.society.name}"
+
+
+class VolunteerProfile(models.Model):
+    APPROVAL_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='volunteer_profile',
+    )
+    society = models.ForeignKey(
+        Society,
+        on_delete=models.CASCADE,
+        related_name='volunteer_profiles',
+    )
+    block = models.ForeignKey(
+        Block,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='volunteer_profiles',
+    )
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    pin_label = models.CharField(max_length=100, blank=True)
+    area_label = models.CharField(max_length=100, blank=True)
+    max_travel_km = models.FloatField(default=3.0)
+    serves_nearby_societies = models.BooleanField(default=False)
+
+    approval_status = models.CharField(
+        max_length=20,
+        choices=APPROVAL_STATUS_CHOICES,
+        default='pending',
+    )
+    approval_reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviewed_volunteer_profiles',
+    )
+    approval_reviewed_at = models.DateTimeField(null=True, blank=True)
+    approval_note = models.TextField(blank=True)
+
+    pin_far_from_society = models.BooleanField(default=False)
+    pin_distance_from_society_km = models.DecimalField(
+        max_digits=6, decimal_places=2, null=True, blank=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"VolunteerProfile: {self.user.username} ({self.approval_status})"
+
+
+class SecurityProfile(models.Model):
+    APPROVAL_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='security_profile',
+    )
+    society = models.ForeignKey(
+        Society,
+        on_delete=models.CASCADE,
+        related_name='security_profiles',
+    )
+    post_label = models.CharField(max_length=100, blank=True)
+    approval_status = models.CharField(
+        max_length=20,
+        choices=APPROVAL_STATUS_CHOICES,
+        default='pending',
+    )
+    approval_reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reviewed_security_profiles',
+    )
+    approval_reviewed_at = models.DateTimeField(null=True, blank=True)
+    approval_note = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"SecurityProfile: {self.user.username} - {self.post_label} ({self.approval_status})"
+
+
+class VolunteerLocation(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='live_volunteer_location',
+    )
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    accuracy = models.FloatField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"Location of {self.user.username} at {self.updated_at}"

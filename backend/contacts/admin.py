@@ -5,9 +5,9 @@ from .models import EmergencyContact
 @admin.register(EmergencyContact)
 class EmergencyContactAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'resident', 'contact_type', 'relationship',
-        'phone', 'is_verified', 'is_active',
+        'name', 'resident', 'linked_user', 'contact_type', 'relationship',
+        'phone', 'status', 'is_verified', 'is_active',
     )
-    list_filter = ('contact_type', 'relationship', 'is_verified', 'is_active')
-    search_fields = ('name', 'phone', 'email', 'resident__email')
-    readonly_fields = ('verification_token', 'verification_sent_at', 'verified_at')
+    list_filter = ('contact_type', 'relationship', 'status', 'is_verified', 'is_active')
+    search_fields = ('name', 'phone', 'email', 'resident__email', 'linked_user__username')
+    readonly_fields = ('is_verified', 'verified_at', 'responded_at', 'last_reminded_at')

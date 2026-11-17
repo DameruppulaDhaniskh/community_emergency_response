@@ -15,10 +15,19 @@ from society.models import (
 User = get_user_model()
 
 
+_DEMO_PHONES = {
+    'demo_resident': '9000000101',
+    'demo_neighbour': '9000000102',
+    'demo_guardian': '9000000103',
+    'demo_security': '9000000104',
+    'demo_volunteer': '9000000105',
+}
+
+
 def get_user(name, role):
     user, created = User.objects.get_or_create(
         email=f'{name}@demo.com',
-        defaults={'username': name, 'phone': '9999999999', 'role': role},
+        defaults={'username': name, 'phone': _DEMO_PHONES.get(name, '9000000199'), 'role': role},
     )
     if created:
         user.set_password('Pass12345!')
@@ -56,10 +65,10 @@ SocietyAssignment.objects.get_or_create(society=society, user=security)
 SocietyAssignment.objects.get_or_create(society=society, user=volunteer)
 SocietyAlertPolicy.objects.get_or_create(society=society, defaults={'notify_community': True})
 EmergencyContact.objects.get_or_create(
-    resident=resident, contact_type='primary_guardian',
+    resident=resident, contact_type='primary_guardian', is_active=True,
     defaults={
-        'linked_user': guardian, 'name': 'Demo Guardian', 'phone': '8888888888',
-        'email': 'demo_guardian@demo.com', 'is_verified': True,
+        'linked_user': guardian, 'name': 'Demo Guardian', 'phone': guardian.phone,
+        'email': 'demo_guardian@demo.com', 'status': 'accepted', 'is_verified': True,
     },
 )
 

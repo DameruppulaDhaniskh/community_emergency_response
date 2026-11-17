@@ -1,15 +1,19 @@
+import itertools
+
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
 from .models import Incident
 
 User = get_user_model()
+_PHONE_SEQ = itertools.count(9100000001)
 
 
 def make_user(name, role):
+    phone_num = f'+91{next(_PHONE_SEQ)}'
     return User.objects.create_user(
         username=name, email=f'{name}@test.com', password='Pass12345!',
-        phone='9999999999', role=role,
+        phone=phone_num, role=role,
     )
 
 
@@ -26,7 +30,7 @@ class IncidentCreateTests(APITestCase):
             'latitude': '16.506200', 'longitude': '80.648000',
         })
         self.assertEqual(r.status_code, 201)
-        self.assertEqual(r.data['status'], 'OPEN')
+        self.assertEqual(r.data['status'], 'REPORTED')
         self.assertIn('id', r.data)
         self.assertIn('created_at', r.data)
         self.assertTrue(r.data['location_available'])
@@ -122,11 +126,11 @@ class IncidentAccessTests(APITestCase):
         self.g_no = make_user('guard_no', 'guardian')
         EmergencyContact.objects.create(
             resident=self.res1, linked_user=self.g_ok, contact_type='primary_guardian',
-            name='Guard Ok', phone='8888888888', is_verified=True,
+            name='Guard Ok', phone='8888888888', status='accepted', is_verified=True,
         )
         EmergencyContact.objects.create(
             resident=self.res1, linked_user=self.g_no, contact_type='secondary_guardian',
-            name='Guard No', phone='7777777777', is_verified=False,
+            name='Guard No', phone='7777777777', status='pending', is_verified=False,
         )
 
         self.inc1 = Incident.objects.create(resident=self.res1, emergency_type='medical')
@@ -156,11 +160,15 @@ class IncidentAccessTests(APITestCase):
         self.client.force_authenticate(self.g_no)
         self.assertEqual(self.ids(self.client.get('/api/incidents/')), [])
 
-    def test_volunteer_sees_only_when_available(self):
+    def test_volunteer_sees_only_assigned_incidents(self):
+        # In Milestone 3 volunteers only see incidents assigned to them.
         self.client.force_authenticate(self.vol1)
-        self.assertEqual(self.ids(self.client.get('/api/incidents/')), [self.inc1.pk])
-        SocietyAssignment.objects.filter(user=self.vol1).update(is_available=False)
         self.assertEqual(self.ids(self.client.get('/api/incidents/')), [])
+        self.assertEqual(self.client.get(f'/api/incidents/{self.inc1.pk}/').status_code, 404)
+        self.inc1.assigned_to = self.vol1
+        self.inc1.status = 'ASSIGNED'
+        self.inc1.save()
+        self.assertEqual(self.ids(self.client.get('/api/incidents/')), [self.inc1.pk])
 
     def test_other_resident_cannot_view_detail(self):
         self.client.force_authenticate(self.res2)
@@ -171,7 +179,7 @@ class IncidentAccessTests(APITestCase):
         self.client.force_authenticate(self.res1)
         r = self.client.get(f'/api/incidents/{self.inc1.pk}/status/')
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.data['status'], 'OPEN')
+        self.assertEqual(r.data['status'], 'REPORTED')
 
     def test_society_admin_sees_own_society_only(self):
         self.client.force_authenticate(self.adm1)

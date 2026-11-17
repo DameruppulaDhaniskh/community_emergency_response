@@ -6,6 +6,9 @@ urlpatterns = [
     path('', views.SocietyListCreateView.as_view(), name='society-list'),
     path('<int:pk>/', views.SocietyDetailView.as_view(), name='society-detail'),
 
+    # Society Policy
+    path('policy/', views.SocietyPolicyView.as_view(), name='society-policy'),
+
     # Blocks under a society
     path('<int:society_pk>/blocks/', views.BlockListCreateView.as_view(), name='block-list'),
 

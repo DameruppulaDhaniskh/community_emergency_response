@@ -1,0 +1,289 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+/*
+ * Design tokens for SafeCircle – Community Emergency Response
+ * Pixel-exact tokens matching design-reference/UI_Designs.html
+ */
+
+@theme {
+  /* ── Colors ── */
+  --color-brand: #D9381E;
+  --color-brand-dark: #B93412;
+  --color-brand-tint: #FFEDE5;
+  --color-sos: #D92D20;
+
+  --color-ink: #1A1A2E;
+  --color-ink-secondary: #5B5B6B;
+  --color-nav-text: #4A4A5A;
+
+  --color-border-subtle: #ECECF1;
+  --color-border-field: #E3E3EA;
+  --color-border-divider: #F0F0F4;
+  --color-border-ghost: #D5D5DE;
+
+  --color-chip-ok-bg: #DCFCE7;
+  --color-chip-ok-text: #166534;
+  --color-chip-warn-bg: #FEF3C7;
+  --color-chip-warn-text: #92400E;
+  --color-chip-bad-bg: #FEE2E2;
+  --color-chip-bad-text: #991B1B;
+  --color-chip-info-bg: #DBEAFE;
+  --color-chip-info-text: #1E40AF;
+
+  --color-success: #166534;
+  --color-success-light: #DCFCE7;
+  --color-success-text: #FFFFFF;
+  --color-warning: #D97706;
+  --color-warning-light: #FEF3C7;
+  --color-warning-text: #92400E;
+
+  /* ── Backwards compatibility aliases ── */
+  --color-primary: #D9381E;
+  --color-primary-hover: #C52F17;
+  --color-primary-light: #FFEDE5;
+  --color-primary-text: #FFFFFF;
+
+  --color-critical: #D92D20;
+  --color-critical-hover: #B42318;
+  --color-critical-light: #FEE2E2;
+  --color-critical-text: #FFFFFF;
+
+  --color-surface: #F5F5F7;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-sunken: #F7F7FA;
+  --color-surface-overlay: rgba(26, 26, 46, 0.45);
+  --color-border: #E3E3EA;
+  --color-border-strong: #D5D5DE;
+  --color-border-focus: #D9381E;
+  --color-ink-tertiary: #717184;
+  --color-ink-disabled: #9C9CAE;
+
+  /* ── Radius ── */
+  --radius-card: 20px;
+  --radius-button: 14px;
+  --radius-ghost: 12px;
+  --radius-field: 12px;
+  --radius-pill: 99px;
+
+  /* ── Font family ── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Global Resets ── */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #1A1A2E;
+  background: linear-gradient(135deg, #FFF1EA, #F5F5F7 55%, #E9E9EE);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, p, ul, ol {
+  margin: 0;
+}
+
+/* ── Standard Design System Classes (from designer template) ── */
+.i {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(20,20,40,.08);
+  padding: 22px;
+}
+
+.nav a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: #4A4A5A;
+  font: 600 14px 'Inter', sans-serif;
+  text-decoration: none;
+  transition: all 150ms ease;
+}
+
+.nav a:hover {
+  background: #FFF5F0;
+  color: #B93412;
+}
+
+.nav a.on {
+  background: #FFEDE5;
+  color: #B93412;
+}
+
+.chip {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font: 700 12px 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+.ok {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.warn {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.bad {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.info {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.cat {
+  padding: 9px 14px;
+  border-radius: 99px;
+  border: 1px solid #E3E3EA;
+  background: #fff;
+  font: 600 13px 'Inter', sans-serif;
+  color: #4A4A5A;
+  cursor: pointer;
+  transition: all 150ms ease;
+  user-select: none;
+}
+
+.cat:hover {
+  border-color: #D9381E;
+}
+
+.cat.on {
+  background: #FFEDE5;
+  border-color: #D9381E;
+  color: #B93412;
+}
+
+.fld {
+  border: 1px solid #E3E3EA;
+  background: #F7F7FA;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: 500 14px 'Inter', sans-serif;
+  color: #1A1A2E;
+  width: 100%;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.fld:focus {
+  border-color: #D9381E;
+  background: #fff;
+}
+
+.lbl {
+  font: 700 12px 'Inter', sans-serif;
+  color: #5B5B6B;
+  margin-bottom: 6px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 20px;
+  background: #D9381E;
+  color: #fff;
+  font: 700 14px 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background-color 150ms ease, opacity 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn:hover:not(:disabled) {
+  background: #C52F17;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ghost {
+  border: 1px solid #D5D5DE;
+  background: #fff;
+  color: #1A1A2E;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font: 700 13px 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.ghost:hover:not(:disabled) {
+  background: #F7F7FA;
+  border-color: #C0C0CB;
+}
+
+.ghost:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sos-emergency-sidebar-btn {
+  margin-top: auto;
+  border: 0;
+  border-radius: 14px;
+  padding: 16px;
+  background: #D92D20;
+  color: #fff;
+  font: 800 13px 'Inter', sans-serif;
+  letter-spacing: .06em;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.sos-emergency-sidebar-btn:hover {
+  background: #B42318;
+}
+
+.sos-emergency-sidebar-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Accessibility & Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
